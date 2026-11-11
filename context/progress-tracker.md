@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Implement the Clerk authentication feature defined in `context/feature-specs/03-auth.md`.
+- Implement the project home and dialogs defined in `context/feature-specs/04-projects-dialouge.md`.
 
 ## Completed
 
@@ -27,6 +27,11 @@ change.
 - Added responsive sign-in and sign-up pages with minimal two-panel desktop layouts and form-only mobile layouts.
 - Added root auth redirects and a Next.js 16 `proxy.ts` that protects all non-auth routes.
 - Added the Clerk `UserButton` to the editor navbar for profile settings and logout.
+- Added the editor home empty state with project creation guidance and a New Project action.
+- Added a dedicated `useProjectDialogs` hook for mock projects, dialog state, form state, loading state, and local actions.
+- Added Create Project, Rename Project, and Delete Project dialogs with live slug preview, autofocus, Enter submission, and destructive confirmation styling.
+- Added owned-project rename/delete actions while keeping shared-project rows read-only.
+- Added a mobile sidebar backdrop scrim that closes the sidebar when tapped outside.
 
 ## In Progress
 
@@ -34,11 +39,11 @@ change.
 
 ## Next Up
 
-- Build the next feature specified after authentication.
+- Build the next feature specified after projects and dialogs.
 
 ## Open Questions
 
-- None for the authentication foundation.
+- None for the projects and dialogs foundation.
 
 ## Architecture Decisions
 
@@ -47,6 +52,7 @@ change.
 - Keep the project sidebar fixed and transform-based so opening it overlays the editor canvas instead of changing the page layout.
 - Use Clerk's prebuilt auth and profile flows, with the app's CSS tokens supplied through `ClerkProvider` appearance variables.
 - Use `proxy.ts` for Next.js 16 route protection and derive public auth paths from the existing Clerk route environment variables, falling back to `/sign-in` and `/sign-up`.
+- Keep project data local and mock-only until a persistence layer is specified; the dialog hook owns all temporary mutations.
 
 - [Decisions made that affect the system design or
   data model — include why the decision was made]
@@ -58,3 +64,4 @@ change.
 - On 2026-11-11, TypeScript and ESLint verification passed. Production build verification is blocked by the environment being unable to fetch the existing Google-hosted Geist fonts.
 - On 2026-11-11, the Clerk authentication feature was implemented from `03-auth.md`.
 - On 2026-11-11, TypeScript, ESLint, and the production build passed with Clerk routes and proxy protection enabled.
+- On 2026-11-11, the project home and dialog/sidebar actions were implemented from `04-projects-dialouge.md`; TypeScript, ESLint, and production build verification passed.
