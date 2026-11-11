@@ -10,12 +10,14 @@ type EditorNavbarProps = {
   isSidebarOpen: boolean
   onToggleSidebar: () => void
   children?: ReactNode
+  actions?: ReactNode
 }
 
 export function EditorNavbar({
   isSidebarOpen,
   onToggleSidebar,
   children,
+  actions,
 }: EditorNavbarProps) {
   const SidebarIcon = isSidebarOpen ? PanelLeftClose : PanelLeftOpen
 
@@ -36,6 +38,7 @@ export function EditorNavbar({
           {children}
         </div>
         <div className="flex min-w-0 flex-1 items-center justify-end">
+          {actions}
           <ClerkLoaded>
             <UserButton />
           </ClerkLoaded>

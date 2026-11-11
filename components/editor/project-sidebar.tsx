@@ -1,6 +1,7 @@
 "use client"
 
 import { Pencil, Plus, Trash2, X } from "lucide-react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,9 +15,10 @@ type ProjectSidebarProps = {
   onRenameProject: (project: Project) => void
   ownedProjects: Project[]
   sharedProjects: Project[]
+  activeProjectId?: string
 }
 
-function ProjectList({ projects, onDeleteProject, onRenameProject }: Pick<ProjectSidebarProps, "onDeleteProject" | "onRenameProject"> & { projects: Project[] }) {
+function ProjectList({ activeProjectId, onClose, projects, onDeleteProject, onRenameProject }: Pick<ProjectSidebarProps, "activeProjectId" | "onClose" | "onDeleteProject" | "onRenameProject"> & { projects: Project[] }) {
   if (!projects.length) {
     return <div className="flex flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">No projects yet.</div>
   }
@@ -24,11 +26,11 @@ function ProjectList({ projects, onDeleteProject, onRenameProject }: Pick<Projec
   return (
     <div className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-3">
       {projects.map((project) => (
-        <div className="group flex items-center gap-2 rounded-lg px-2 py-2 text-sm hover:bg-muted" key={project.id}>
-          <div className="min-w-0 flex-1">
+        <div className={`group flex items-center gap-2 rounded-lg px-2 py-2 text-sm ${activeProjectId === project.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`} key={project.id}>
+          <Link aria-current={activeProjectId === project.id ? "page" : undefined} className="min-w-0 flex-1" href={`/editor/${project.id}`} onClick={onClose}>
             <p className="truncate font-medium">{project.name}</p>
             <p className="truncate text-xs text-muted-foreground">/{project.slug}</p>
-          </div>
+          </Link>
           {project.ownership === "owned" ? (
             <div className="flex items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
               <Button aria-label={`Rename ${project.name}`} onClick={() => onRenameProject(project)} size="icon-xs" variant="ghost"><Pencil /></Button>
@@ -41,7 +43,7 @@ function ProjectList({ projects, onDeleteProject, onRenameProject }: Pick<Projec
   )
 }
 
-export function ProjectSidebar({ isOpen, onClose, onCreateProject, onDeleteProject, onRenameProject, ownedProjects, sharedProjects }: ProjectSidebarProps) {
+export function ProjectSidebar({ activeProjectId, isOpen, onClose, onCreateProject, onDeleteProject, onRenameProject, ownedProjects, sharedProjects }: ProjectSidebarProps) {
   return (
     <>
       <button
@@ -66,10 +68,10 @@ export function ProjectSidebar({ isOpen, onClose, onCreateProject, onDeleteProje
             <TabsTrigger value="shared">Shared</TabsTrigger>
           </TabsList>
           <TabsContent className="flex min-h-0 flex-1" value="my-projects">
-            <ProjectList onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={ownedProjects} />
+            <ProjectList activeProjectId={activeProjectId} onClose={onClose} onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={ownedProjects} />
           </TabsContent>
           <TabsContent className="flex min-h-0 flex-1" value="shared">
-            <ProjectList onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={sharedProjects} />
+            <ProjectList activeProjectId={activeProjectId} onClose={onClose} onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={sharedProjects} />
           </TabsContent>
         </Tabs>
 

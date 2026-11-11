@@ -5,14 +5,15 @@ change.
 
 ## Current Phase
 
-- Editor home is wired to server-loaded project data and API-backed project
-  mutations; database application verification is pending because the
-  configured local Prisma Postgres server is unavailable.
+- The editor home, `/editor/[roomId]` workspace shell, and project sharing
+  flow are wired to server-loaded project data and API-backed mutations;
+  database application verification is pending because the configured local
+  Prisma Postgres server is unavailable.
 
 ## Current Goal
 
-- Verify the project API routes and editor home flows against a running
-  database.
+- Verify the project and collaborator API routes, editor home flows, workspace
+  access checks, and Clerk profile enrichment against a running database.
 
 ## Completed
 
@@ -46,16 +47,32 @@ change.
 - Added authenticated project API route handlers for listing and creating
   projects, plus owner-checked rename and delete handlers, from
   `context/feature-specs/06-project-apis.md`.
+- Added `lib/project-access.ts` with Clerk identity and owner/collaborator
+  access helpers.
+- Added the server-checked `/editor/[roomId]` workspace route from
+  `context/feature-specs/08-editor-workspace-shell.md`.
+- Added the reusable `AccessDenied` state for missing and unauthorized rooms.
+- Added the editor workspace shell with the project name navbar, share and AI
+  sidebar actions, highlighted current project, canvas placeholder, and AI
+  sidebar placeholder.
+- Added collaborator API routes for listing, inviting, and removing project
+  collaborators with server-side access and owner checks.
+- Added Clerk-backed collaborator profile enrichment with email-only fallback
+  when a matching Clerk user is unavailable.
+- Added the workspace share dialog with project-link copying, collaborator
+  lists, owner invite/remove controls, and read-only collaborator access.
 
 ## In Progress
 
-- Apply the first migration and exercise the project API routes once the
-  configured local Prisma Postgres server is running.
+- Apply the first migration and exercise the project and collaborator API
+  routes, workspace access checks, and share dialog once the configured local
+  Prisma Postgres server is running.
 
 ## Next Up
 
 - Run `prisma migrate dev` against the configured database and verify `401`,
-  `403`, CRUD, and owner-scoping behavior for the project API routes.
+  `403`, CRUD, owner-scoping, workspace access, collaborator mutations, and
+  Clerk profile enrichment behavior.
 
 ## Open Questions
 
@@ -74,6 +91,11 @@ change.
 - Use Prisma's generated client output under `app/generated/prisma`; use
   `accelerateUrl` for Prisma Accelerate URLs and `PrismaPg` for direct
   PostgreSQL connections.
+- Keep workspace authorization in a server-side helper and pass only the
+  authorized project context into the interactive client shell.
+- Store collaborator email addresses in `ProjectCollaborator` and enrich
+  display data at read time through Clerk rather than adding a local user
+  table.
 
 - [Decisions made that affect the system design or
   data model — include why the decision was made]
@@ -115,3 +137,12 @@ change.
 - On 2026-11-11, the editor route opted out of instant-navigation validation
   because Clerk session reads are request-time authentication data; the route
   remains server-rendered and is allowed to block until that data resolves.
+- On 2026-11-11, the `/editor/[roomId]` workspace shell was implemented from
+  `08-editor-workspace-shell.md`; TypeScript, ESLint, and the production build
+  passed. Runtime database verification remains pending because the local
+  Prisma Postgres server is unavailable.
+- On 2026-11-11, project sharing was implemented from `09-share-dialog.md`;
+  collaborator API routes, Clerk profile enrichment, and owner/read-only share
+  dialog behavior were added. TypeScript, ESLint, and the production build
+  passed. Runtime database and Clerk verification remains pending because the
+  local Prisma Postgres server is unavailable.
