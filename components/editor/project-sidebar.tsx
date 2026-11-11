@@ -4,7 +4,7 @@ import { Pencil, Plus, Trash2, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Project } from "@/components/projects/use-project-dialogs"
+import type { Project } from "@/components/projects/use-project-actions"
 
 type ProjectSidebarProps = {
   isOpen: boolean
@@ -12,10 +12,11 @@ type ProjectSidebarProps = {
   onCreateProject: () => void
   onDeleteProject: (project: Project) => void
   onRenameProject: (project: Project) => void
-  projects: Project[]
+  ownedProjects: Project[]
+  sharedProjects: Project[]
 }
 
-function ProjectList({ projects, onDeleteProject, onRenameProject }: Pick<ProjectSidebarProps, "projects" | "onDeleteProject" | "onRenameProject">) {
+function ProjectList({ projects, onDeleteProject, onRenameProject }: Pick<ProjectSidebarProps, "onDeleteProject" | "onRenameProject"> & { projects: Project[] }) {
   if (!projects.length) {
     return <div className="flex flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">No projects yet.</div>
   }
@@ -40,7 +41,7 @@ function ProjectList({ projects, onDeleteProject, onRenameProject }: Pick<Projec
   )
 }
 
-export function ProjectSidebar({ isOpen, onClose, onCreateProject, onDeleteProject, onRenameProject, projects }: ProjectSidebarProps) {
+export function ProjectSidebar({ isOpen, onClose, onCreateProject, onDeleteProject, onRenameProject, ownedProjects, sharedProjects }: ProjectSidebarProps) {
   return (
     <>
       <button
@@ -65,10 +66,10 @@ export function ProjectSidebar({ isOpen, onClose, onCreateProject, onDeleteProje
             <TabsTrigger value="shared">Shared</TabsTrigger>
           </TabsList>
           <TabsContent className="flex min-h-0 flex-1" value="my-projects">
-            <ProjectList onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={projects.filter(({ ownership }) => ownership === "owned")} />
+            <ProjectList onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={ownedProjects} />
           </TabsContent>
           <TabsContent className="flex min-h-0 flex-1" value="shared">
-            <ProjectList onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={projects.filter(({ ownership }) => ownership === "shared")} />
+            <ProjectList onDeleteProject={onDeleteProject} onRenameProject={onRenameProject} projects={sharedProjects} />
           </TabsContent>
         </Tabs>
 

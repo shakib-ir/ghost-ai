@@ -5,13 +5,14 @@ change.
 
 ## Current Phase
 
-- Prisma data layer implemented; database application verification is pending
-  because the configured local Prisma Postgres server is unavailable.
+- Editor home is wired to server-loaded project data and API-backed project
+  mutations; database application verification is pending because the
+  configured local Prisma Postgres server is unavailable.
 
 ## Current Goal
 
-- Implement the Prisma schema, client singleton, and first migration defined in
-  `context/feature-specs/05-prisma.md`.
+- Verify the project API routes and editor home flows against a running
+  database.
 
 ## Completed
 
@@ -42,16 +43,19 @@ change.
   `DATABASE_URL`.
 - Generated the Prisma 7 client and added the first migration at
   `prisma/migrations/20261111120000_init/migration.sql`.
+- Added authenticated project API route handlers for listing and creating
+  projects, plus owner-checked rename and delete handlers, from
+  `context/feature-specs/06-project-apis.md`.
 
 ## In Progress
 
-- Apply and verify the first migration once the configured local Prisma
-  Postgres server is running.
+- Apply the first migration and exercise the project API routes once the
+  configured local Prisma Postgres server is running.
 
 ## Next Up
 
-- Run `prisma migrate dev` against the configured database, then continue with
-  the next feature specification.
+- Run `prisma migrate dev` against the configured database and verify `401`,
+  `403`, CRUD, and owner-scoping behavior for the project API routes.
 
 ## Open Questions
 
@@ -86,3 +90,28 @@ change.
   first migration were implemented from `05-prisma.md`. Schema formatting and
   client generation passed; migration application was blocked by the local
   Prisma Postgres server being unavailable.
+- On 2026-11-11, the backend-only project API routes were implemented from
+  `06-project-apis.md`; TypeScript compilation and the production build passed.
+  ESLint passed with only the existing generated-Prisma unused-directive
+  warnings.
+- On 2026-11-11, `07-wire-editor-home.md` was implemented: the editor page now
+  loads owned and shared projects server-side, the sidebar receives real data,
+  and create, rename, and delete actions call the project API. Created project
+  room IDs use a slug plus short unique suffix and are used as the project ID;
+  successful creation navigates to the workspace route.
+- On 2026-11-11, the editor home was made resilient to the unavailable local
+  Prisma Postgres service: connection failures now render an explanatory empty
+  state instead of crashing the Server Component.
+- On 2026-11-11, local `prisma+postgres` URLs were updated to use the direct
+  PostgreSQL URL embedded in Prisma Dev's local API key, avoiding the Prisma
+  7.10.1 local HTTP connection incompatibility while retaining Accelerate for
+  non-local URLs.
+- On 2026-11-11, Prisma Dev's base64url API key format was supported alongside
+  JWT-shaped Accelerate keys, and the Clerk `UserButton` was gated behind
+  `ClerkLoaded` to prevent editor hydration mismatches.
+- On 2026-11-11, the editor's uncached Clerk/project read was moved behind a
+  route-level `Suspense` boundary to support Next.js 16 Cache Components and
+  partial prefetching during navigation.
+- On 2026-11-11, the editor route opted out of instant-navigation validation
+  because Clerk session reads are request-time authentication data; the route
+  remains server-rendered and is allowed to block until that data resolves.
