@@ -4,6 +4,7 @@ import { PanelRightClose, PanelRightOpen, Share2 } from "lucide-react"
 import { useState } from "react"
 
 import { EditorNavbar } from "@/components/editor/editor-navbar"
+import { EditorCanvas } from "@/components/editor/editor-canvas"
 import { ProjectSidebar } from "@/components/editor/project-sidebar"
 import { ShareDialog } from "@/components/editor/share-dialog"
 import { useShareDialog } from "@/components/editor/use-share-dialog"
@@ -64,13 +65,8 @@ export function EditorWorkspace({ project, ownedProjects, sharedProjects }: Edit
         />
 
         <main className="flex min-w-0 flex-1">
-          <section aria-label="Editor canvas" className="flex min-w-0 flex-1 items-center justify-center bg-background px-6">
-            <div className="max-w-md space-y-2 text-center">
-              <h1 className="text-lg font-semibold">Canvas coming soon</h1>
-              <p className="text-sm leading-6 text-muted-foreground">
-                Your project workspace is ready. The interactive canvas will appear here.
-              </p>
-            </div>
+          <section aria-label="Editor canvas" className="min-h-0 min-w-0 flex-1 bg-background">
+            <EditorCanvas roomId={project.id} />
           </section>
 
           {isAiSidebarOpen ? (

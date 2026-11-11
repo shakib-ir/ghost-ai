@@ -1,8 +1,9 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { ClerkLoaded, UserButton } from "@clerk/nextjs"
+import { UserButton } from "@clerk/nextjs"
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
@@ -11,6 +12,20 @@ type EditorNavbarProps = {
   onToggleSidebar: () => void
   children?: ReactNode
   actions?: ReactNode
+}
+
+function MountedUserButton() {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return <div aria-hidden="true" className="size-8" />
+  }
+
+  return <UserButton />
 }
 
 export function EditorNavbar({
@@ -39,9 +54,7 @@ export function EditorNavbar({
         </div>
         <div className="flex min-w-0 flex-1 items-center justify-end">
           {actions}
-          <ClerkLoaded>
-            <UserButton />
-          </ClerkLoaded>
+          <MountedUserButton />
         </div>
       </div>
     </nav>

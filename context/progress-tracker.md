@@ -7,13 +7,16 @@ change.
 
 - The editor home, `/editor/[roomId]` workspace shell, and project sharing
   flow are wired to server-loaded project data and API-backed mutations;
-  database application verification is pending because the configured local
-  Prisma Postgres server is unavailable.
+  realtime collaboration auth infrastructure and the base React Flow canvas
+  are now wired through Liveblocks;
+  database and Liveblocks application verification is pending because the
+  configured local Prisma Postgres server and Liveblocks secret are unavailable.
 
 ## Current Goal
 
 - Verify the project and collaborator API routes, editor home flows, workspace
-  access checks, and Clerk profile enrichment against a running database.
+  access checks, Clerk profile enrichment, and Liveblocks room authorization
+  against configured services.
 
 ## Completed
 
@@ -61,24 +64,42 @@ change.
   when a matching Clerk user is unavailable.
 - Added the workspace share dialog with project-link copying, collaborator
   lists, owner invite/remove controls, and read-only collaborator access.
+- Stabilized the Clerk `UserButton` render behind a post-hydration mount gate
+  so the editor navbar keeps identical server and initial client markup.
+- Added typed Liveblocks presence and user metadata for cursor state, thinking
+  state, display names, avatars, and cursor colors.
+- Added a cached Liveblocks node client with deterministic cursor-color mapping.
+- Added `POST /api/liveblocks-auth` with Clerk authentication, project access
+  checks, private-room creation, and per-session write authorization.
+- Added shared canvas types for `canvasNode` and `canvasEdge` with label, color,
+  and shape node data.
+- Replaced the workspace canvas placeholder with a client-side Liveblocks and
+  React Flow canvas using synced nodes and edges, loose connections, fit-to-view,
+  a minimap, and a dot-pattern background.
+- Added loading and Liveblocks connection-error fallbacks around the canvas.
 
 ## In Progress
 
 - Apply the first migration and exercise the project and collaborator API
-  routes, workspace access checks, and share dialog once the configured local
-  Prisma Postgres server is running.
+  routes, workspace access checks, share dialog, and Liveblocks auth once the
+  configured local Prisma Postgres server and Liveblocks secret are available;
+  runtime canvas collaboration verification is included in that pass.
 
 ## Next Up
 
 - Run `prisma migrate dev` against the configured database and verify `401`,
-  `403`, CRUD, owner-scoping, workspace access, collaborator mutations, and
-  Clerk profile enrichment behavior.
+  `403`, CRUD, owner-scoping, workspace access, collaborator mutations, Clerk
+  profile enrichment, Liveblocks room/session behavior, and collaborative canvas
+  synchronization.
 
 ## Open Questions
 
 - The configured `prisma+postgres` database points to local ports `51213` and
   `51214`, but the local Prisma Postgres server is not running in this
   environment. Migration application must be re-run when it is available.
+- `LIVEBLOCKS_SECRET_KEY` is not configured in the local environment, so the
+  Liveblocks auth route can only be build-verified until a project secret is
+  supplied.
 
 ## Architecture Decisions
 
@@ -96,6 +117,10 @@ change.
 - Store collaborator email addresses in `ProjectCollaborator` and enrich
   display data at read time through Clerk rather than adding a local user
   table.
+- Use private Liveblocks rooms with access-token permissions granted only after
+  the existing project access helper authorizes the requested project.
+- Keep the canvas client-side behind the server-authorized workspace route, with
+  Liveblocks Storage as the source for the initial React Flow nodes and edges.
 
 - [Decisions made that affect the system design or
   data model — include why the decision was made]
@@ -146,3 +171,17 @@ change.
   dialog behavior were added. TypeScript, ESLint, and the production build
   passed. Runtime database and Clerk verification remains pending because the
   local Prisma Postgres server is unavailable.
+- On 2026-11-11, `10-liveblocks-setup.md` was implemented: typed presence and
+  user metadata, cached server client, deterministic cursor colors, and the
+  Clerk/project-authorized Liveblocks auth route were added. The missing
+  `@liveblocks/node` dependency was installed. Runtime verification remains
+  pending because `LIVEBLOCKS_SECRET_KEY` and the local database are not
+  configured.
+- On 2026-11-11, `11-base-canvas.md` was implemented: the workspace now hosts
+  a Liveblocks-backed React Flow canvas with typed shared node/edge data,
+  initial presence, suspense loading, connection-error handling, loose
+  connections, fit-to-view, a minimap, and a dot background. TypeScript,
+  ESLint, and the production build passed.
+- On 2026-11-11, a reported editor hydration mismatch was traced to
+  `ClerkLoaded` mounting `UserButton` before hydration completed. The navbar now
+  renders a stable placeholder until the client mount effect runs.
