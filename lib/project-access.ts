@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma"
 export type CurrentClerkIdentity = {
   userId: string
   primaryEmail: string | null
+  displayName: string
+  avatarUrl: string | null
 }
 
 export type AccessibleProject = {
@@ -26,6 +28,12 @@ export async function getCurrentClerkIdentity(): Promise<CurrentClerkIdentity | 
   return {
     userId,
     primaryEmail: user?.primaryEmailAddress?.emailAddress ?? null,
+    displayName:
+      user?.fullName ||
+      user?.username ||
+      user?.primaryEmailAddress?.emailAddress ||
+      userId,
+    avatarUrl: user?.imageUrl ?? null,
   }
 }
 
