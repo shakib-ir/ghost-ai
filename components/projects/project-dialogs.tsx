@@ -6,7 +6,7 @@ import { EditorDialogContent } from "@/components/editor/editor-dialog"
 import { Button } from "@/components/ui/button"
 import { Dialog } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { slugifyProjectName, type Project, type ProjectDialog } from "@/components/projects/use-project-dialogs"
+import { type Project, type ProjectDialog } from "@/components/projects/use-project-actions"
 
 type ProjectDialogsProps = {
   activeDialog: ProjectDialog
@@ -15,12 +15,13 @@ type ProjectDialogsProps = {
   deleteProject: () => Promise<void>
   isLoading: boolean
   projectName: string
+  roomIdPreview: string
   selectedProject?: Project
   setProjectName: (name: string) => void
   renameProject: () => Promise<void>
 }
 
-export function ProjectDialogs({ activeDialog, closeDialog, createProject, deleteProject, isLoading, projectName, selectedProject, setProjectName, renameProject }: ProjectDialogsProps) {
+export function ProjectDialogs({ activeDialog, closeDialog, createProject, deleteProject, isLoading, projectName, roomIdPreview, selectedProject, setProjectName, renameProject }: ProjectDialogsProps) {
   function submitCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     void createProject()
@@ -47,7 +48,7 @@ export function ProjectDialogs({ activeDialog, closeDialog, createProject, delet
               <label className="text-sm font-medium" htmlFor="create-project-name">Project name</label>
               <Input autoFocus id="create-project-name" onChange={(event) => setProjectName(event.target.value)} placeholder="Architecture Workspace" value={projectName} />
             </div>
-            <p className="text-sm text-muted-foreground">Slug preview: <span className="font-mono text-foreground">{slugifyProjectName(projectName) || "—"}</span></p>
+            <p className="text-sm text-muted-foreground">Room ID preview: <span className="font-mono text-foreground">{roomIdPreview || "—"}</span></p>
           </form>
         </EditorDialogContent>
       </Dialog>

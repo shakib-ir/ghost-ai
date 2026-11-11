@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { UserButton } from "@clerk/nextjs"
+import { ClerkLoaded, UserButton } from "@clerk/nextjs"
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -36,7 +36,9 @@ export function EditorNavbar({
           {children}
         </div>
         <div className="flex min-w-0 flex-1 items-center justify-end">
-          <UserButton />
+          <ClerkLoaded>
+            <UserButton />
+          </ClerkLoaded>
         </div>
       </div>
     </nav>
