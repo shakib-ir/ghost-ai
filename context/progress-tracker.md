@@ -5,11 +5,13 @@ change.
 
 ## Current Phase
 
-- Complete
+- Prisma data layer implemented; database application verification is pending
+  because the configured local Prisma Postgres server is unavailable.
 
 ## Current Goal
 
-- Implement the project home and dialogs defined in `context/feature-specs/04-projects-dialouge.md`.
+- Implement the Prisma schema, client singleton, and first migration defined in
+  `context/feature-specs/05-prisma.md`.
 
 ## Completed
 
@@ -32,18 +34,30 @@ change.
 - Added Create Project, Rename Project, and Delete Project dialogs with live slug preview, autofocus, Enter submission, and destructive confirmation styling.
 - Added owned-project rename/delete actions while keeping shared-project rows read-only.
 - Added a mobile sidebar backdrop scrim that closes the sidebar when tapped outside.
+- Added the Prisma `ProjectStatus`, `Project`, and `ProjectCollaborator` models
+  with the required relations, cascade delete, uniqueness constraint, and
+  indexes in `prisma/models/project.prisma`.
+- Added the cached Prisma singleton in `lib/prisma.ts`, branching between
+  Prisma Accelerate and the direct PostgreSQL driver adapter based on
+  `DATABASE_URL`.
+- Generated the Prisma 7 client and added the first migration at
+  `prisma/migrations/20261111120000_init/migration.sql`.
 
 ## In Progress
 
-- None.
+- Apply and verify the first migration once the configured local Prisma
+  Postgres server is running.
 
 ## Next Up
 
-- Build the next feature specified after projects and dialogs.
+- Run `prisma migrate dev` against the configured database, then continue with
+  the next feature specification.
 
 ## Open Questions
 
-- None for the projects and dialogs foundation.
+- The configured `prisma+postgres` database points to local ports `51213` and
+  `51214`, but the local Prisma Postgres server is not running in this
+  environment. Migration application must be re-run when it is available.
 
 ## Architecture Decisions
 
@@ -53,6 +67,9 @@ change.
 - Use Clerk's prebuilt auth and profile flows, with the app's CSS tokens supplied through `ClerkProvider` appearance variables.
 - Use `proxy.ts` for Next.js 16 route protection and derive public auth paths from the existing Clerk route environment variables, falling back to `/sign-in` and `/sign-up`.
 - Keep project data local and mock-only until a persistence layer is specified; the dialog hook owns all temporary mutations.
+- Use Prisma's generated client output under `app/generated/prisma`; use
+  `accelerateUrl` for Prisma Accelerate URLs and `PrismaPg` for direct
+  PostgreSQL connections.
 
 - [Decisions made that affect the system design or
   data model — include why the decision was made]
@@ -65,3 +82,7 @@ change.
 - On 2026-11-11, the Clerk authentication feature was implemented from `03-auth.md`.
 - On 2026-11-11, TypeScript, ESLint, and the production build passed with Clerk routes and proxy protection enabled.
 - On 2026-11-11, the project home and dialog/sidebar actions were implemented from `04-projects-dialouge.md`; TypeScript, ESLint, and production build verification passed.
+- On 2026-11-11, the Prisma schema, client singleton, generated client, and
+  first migration were implemented from `05-prisma.md`. Schema formatting and
+  client generation passed; migration application was blocked by the local
+  Prisma Postgres server being unavailable.

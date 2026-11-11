@@ -40,3 +40,11 @@
 2. [Invariant two]
 3. [Invariant three]
 4. [Invariant four]
+
+## Prisma Decisions
+
+- Use Prisma 7's generated client in `app/generated/prisma`.
+- Use Prisma Accelerate for `prisma+postgres://` URLs and the
+  `@prisma/adapter-pg` driver adapter for direct PostgreSQL URLs.
+- Cache the Prisma client on `globalThis` during development to avoid
+  duplicate clients during hot reloads.
