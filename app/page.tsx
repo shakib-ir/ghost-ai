@@ -1,28 +1,21 @@
-"use client"
+import { Suspense } from "react"
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
 
-import { useState } from "react"
+const signInPath = process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? "/sign-in"
 
-import { EditorNavbar } from "@/components/editor/editor-navbar"
-import { ProjectSidebar } from "@/components/editor/project-sidebar"
+async function RedirectByAuth() {
+  const { isAuthenticated } = await auth()
+
+  redirect(isAuthenticated ? "/editor" : signInPath)
+
+  return null
+}
 
 export default function Home() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-
   return (
-    <div className="min-h-screen bg-background">
-      <EditorNavbar
-        isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
-      >
-        Ghost AI
-      </EditorNavbar>
-      <ProjectSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
-      <main className="flex min-h-screen items-center justify-center pt-14">
-        <span className="text-sm text-muted-foreground">Editor canvas</span>
-      </main>
-    </div>
+    <Suspense fallback={null}>
+      <RedirectByAuth />
+    </Suspense>
   )
 }
